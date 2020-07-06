@@ -1,65 +1,54 @@
 package br.edu.ufersa.sd.pratica3;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.Scanner;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.net.Socket; 
 
-public class ServerTCPIPFileTransf {
-	
-	 public static void main(String[] args) throws Exception{
-		 
-		 //criando o servidor porta 3400
-		 try(ServerSocket listenerServer = new ServerSocket(3400)) {
-			 System.out.println("Servidor em execução... " + listenerServer.getLocalPort());
-			 
-			 //definindo o pool de tamanho fixo de threads
-			 System.out.println("Criando pool de threads... ");
-			 ExecutorService poolThreads = Executors.newFixedThreadPool(30);
-			 
-			 while (true) {
-				poolThreads.execute(new FileTransfer(listenerServer.accept()));
-				System.out.println("Nova conexão recebida...");
-			}
-		 }
-	}
-
-	//criando a classe para tratar as requisições dos clientes
-	private static class FileTransfer implements Runnable {
+//Java implementation of  Server side 
+//It contains two classes : Server and ClientHandler 
+//Save file as Server.java 
+	  
+	// Server class Server sockets 
+	public class ServerTCPIPFileTransf { 
 		
-		private Socket socket;
-		
-		FileTransfer(Socket socket) {
-			this.socket = socket;
-		}
-		
-		@Override
-		public void run() {
-			System.out.println("Conectado: " + socket);
-			try {
-				Scanner in = new Scanner(socket.getInputStream());
-				PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-				
-				while(in.hasNextLine()) {
-					out.println(in.nextLine().toUpperCase()); //apenas executa uma tarefa simples
-				}
-			}catch (Exception e) {
-				System.out.println("Error: " + socket);
-			}finally {
-				try {
-					socket.close();
-				} catch (IOException e) {
-					e.getMessage();
-				}
-				System.out.println("Closed: " + socket);
-			}
-		}
-	}
-
+	    public static void main(String[] args) throws IOException  { 
+	    	
+	        // sServidor iniciado na porta 3400
+	        try(ServerSocket socketServer = new ServerSocket(3400)) {
+	        	System.out.println("Iniciando servidor porta " + socketServer.getLocalPort());
+	        	
+		        // criando um loop infinito para requisições de clientes
+		        while (true)  { 
+		        	
+		        	Socket socket = null; 
+		              
+		            try 
+		            { 
+		                // objeto socket para aceitar requisições dos clientes
+		                socket = socketServer.accept(); 
+		                  
+		                System.out.println("Novo cliente conectado: " + socket); 
+		                  
+		                // obtendo entrada e saída de streams
+		                DataInputStream dInput = new DataInputStream(socket.getInputStream()); 
+		                DataOutputStream dOutput = new DataOutputStream(socket.getOutputStream()); 
+		                  
+		                System.out.println("Cliente adicionado a uma nova thread..."); 
+		  
+		                // Criando um objeto thread
+		                Thread thread = new ClientHandler(socket, dInput, dOutput); 
+		  
+		                // invocar o método para iniciar thread
+		                thread.start(); 
+		                  
+		            } 
+		            catch (Exception e){ 
+		                socket.close(); 
+		                e.printStackTrace(); 
+		            } 
+		        } 
+		    }
+	    }
 }
-
-
-
