@@ -14,13 +14,15 @@ public class ServerTCPIPFileTransf {
 		 
 		 //criando o servidor porta 3400
 		 try(ServerSocket listenerServer = new ServerSocket(3400)) {
-			 System.out.println("Servidor em execução... " );
+			 System.out.println("Servidor em execução... " + listenerServer.getLocalPort());
 			 
 			 //definindo o pool de tamanho fixo de threads
+			 System.out.println("Criando pool de threads... ");
 			 ExecutorService poolThreads = Executors.newFixedThreadPool(30);
 			 
 			 while (true) {
-				poolThreads.execute(new FileTransfer(listenerServer.accept())); 
+				poolThreads.execute(new FileTransfer(listenerServer.accept()));
+				System.out.println("Nova conexão recebida...");
 			}
 		 }
 	}
@@ -49,7 +51,8 @@ public class ServerTCPIPFileTransf {
 			}finally {
 				try {
 					socket.close();
-				} catch (IOException e2) {
+				} catch (IOException e) {
+					e.getMessage();
 				}
 				System.out.println("Closed: " + socket);
 			}

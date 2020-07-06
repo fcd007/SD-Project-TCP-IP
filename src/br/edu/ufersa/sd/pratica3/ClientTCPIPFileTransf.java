@@ -8,12 +8,12 @@ public class ClientTCPIPFileTransf {
 
 	public static void main(String[] args) throws Exception {
 		
-		if(args.length != 1) {
-			System.out.println("Passa o IP do servidor como único argumento de linha de comando");
-			return;
-		}
-		
-		try (Socket socket = new Socket(args[0], 3400)) {
+//		if(args.length != 1) {
+//			System.out.println("Passa o IP do servidor como único argumento de linha de comando");
+//			return;
+//		}
+		//iniciando a conexão com o servidor porta 3400
+		try (Socket socket = new Socket("localhost", 3400)) {
 			//entrada de dados
 			Scanner scanner = new Scanner(System.in);
 			Scanner in = new Scanner(socket.getInputStream());
