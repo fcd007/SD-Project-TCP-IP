@@ -35,8 +35,7 @@ import java.util.Date;
 	            try { 
 	  
 	                // Use uma das opções abaixo
-	            	dOutput.writeUTF("Deseja saber | Date | Time]..\n"+ 
-	                            "Sair fecha a conexão."); 
+	            	dOutput.writeUTF("Sair fecha a conexão."); 
 	                  
 	                // recebendo resposta do cliente
 	                received = dInput.readUTF(); 

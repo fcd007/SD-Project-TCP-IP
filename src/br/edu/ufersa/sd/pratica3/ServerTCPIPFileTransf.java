@@ -8,24 +8,26 @@ import java.net.Socket;
 
 //Java implementation of  Server side 
 //It contains two classes : Server and ClientHandler 
-//Save file as Server.java 
+//Save file as Server.java
 	  
 	// Server class Server sockets 
 	public class ServerTCPIPFileTransf { 
 		
+		static final int LISTENING_PORT = 3400;
+		
 	    public static void main(String[] args) throws IOException  { 
 	    	
-	        // sServidor iniciado na porta 3400
-	        try(ServerSocket socketServer = new ServerSocket(3400)) {
+	        // Servidor iniciado na porta 3400
+	        try(ServerSocket socketServer = new ServerSocket(LISTENING_PORT)) {
 	        	System.out.println("Iniciando servidor porta " + socketServer.getLocalPort());
 	        	
 		        // criando um loop infinito para requisições de clientes
 		        while (true)  { 
 		        	
 		        	Socket socket = null; 
-		              
+
 		            try 
-		            { 
+		            {
 		                // objeto socket para aceitar requisições dos clientes
 		                socket = socketServer.accept(); 
 		                  

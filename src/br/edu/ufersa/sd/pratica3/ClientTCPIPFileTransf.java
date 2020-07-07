@@ -24,7 +24,7 @@ import java.util.Scanner;
 				DataInputStream dInput = new DataInputStream(socket.getInputStream()); 
 				DataOutputStream dOuput = new DataOutputStream(socket.getOutputStream()); 
 		
-				// loopdados vindos do cliente e do clienteHandler 
+				// loop dados vindos do cliente e do clienteHandler 
 				while (true) 
 				{ 
 					System.out.println(dInput.readUTF()); 
