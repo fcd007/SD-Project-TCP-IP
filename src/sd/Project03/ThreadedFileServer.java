@@ -1,5 +1,3 @@
-package br.edu.ufersa.sd.pratica3;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -14,56 +12,43 @@ public class ThreadedFileServer {
 
     static final int LISTENING_PORT = 3400;
     
-    //criando um pool de threads fixo
+//criar um pool de threads
     private static final int THREAD_POOL_SIZE = 30;
     
-    /*O comprimento do ArrayBlockingQueue de conexões.
-     * Isso não deve ser muito grande, pois as conexões no
-     * fila estão esperando por serviço e espero que não
-     * gaste muito tempo na fila.
-     */
+//definindo uma lista de conexões
     private static final int CONNECTION_QUEUE_SIZE = 50;
-    
-    /*A fila usada para enviar conexões do
-     * programa principal para os threads de manipulação de conexão.
-     * Uma conexão é representada por um soquete conectado.
-     */
+//um array para tratar a nossa lista de conexões
     private static ArrayBlockingQueue<Socket> connectionQueue;
     
     
     public static void main(String[] args) {
 
-    	String directoryName;  // Directory name entered by the user.
-        File directory;        // File object referring to the directory.
-        String[] files;        // Array of file names in the directory.
-        Scanner scanner;       // For reading a line of input from the user.
+    	//arquivo de diretório
+        File directory;
+        //lista de requisições
+        ServerSocket listener; 
+        //conectar cliente
+        Socket connection;   
 
-        scanner = new Scanner(System.in);  // scanner reads from standard input.
 
-        System.out.print("Nome do diretório: ");
-        directoryName = scanner.nextLine().trim();
+        /* avaliando  a requisição*/
+        if (args.length == 0) {
+           System.out.println("Use a linha de comando:  java FileServer <diretório>");
+           return;
+        }
         
-        //Escuta solicitações de conexão.
-        ServerSocket listener;
-        // Um ​​soquete para comunicação com um cliente.
-        Socket connection;
-       
-
-        /* Obtenha o nome do diretório faça em um objeto 
-         * de arquivo. Verifique se o arquivo existe e
-         * é de fato um diretório. */
-
-        directory = new File(directoryName);
+        //verificando a solicitação do argumento
+        directory = new File(args[0]);
         if ( ! directory.exists() ) {
-            System.out.println("o diretório não existe.");
+            System.out.println("Diretório nao existe.");
             return;
         }
         if (! directory.isDirectory() ) {
-            System.out.println("O arquivo não é um diretório.");
+            System.out.println("Não é um diretório.");
             return;
         }
         
-        /* criando a fila de conexões, criando as threads*/
+        //criando os recursos de conexão e array threads
         connectionQueue = new ArrayBlockingQueue<Socket>(CONNECTION_QUEUE_SIZE);
         
         //criando o pool de threads
@@ -73,27 +58,29 @@ public class ThreadedFileServer {
         }
 
         /* Listar as conexões e adicionar a lista*/
+
         try {
             listener = new ServerSocket(LISTENING_PORT);
-            System.out.println("Servidor ouvindo na porta: " + LISTENING_PORT);
+            System.out.println("Servidor listado na porta " + LISTENING_PORT);
             while (true) {
                 connection = listener.accept();
                 connectionQueue.add(connection);
             }
         }
         catch (Exception e) {
-            System.out.println("Servidor encerrado.");
+            System.out.println("Servidor encerrou do nada!.");
             System.out.println("Error:  " + e);
             return;
         }
 
-    }
+    } // end main()
 
 
-    /*A classe que define os segmentos de manipulação de conexão*/
+    /**
+     * a classe que define a criação das threads
+     */
     private static class ConnectionHandler extends Thread {
-    	// O diretório que contém os arquivos que estão no servidor.
-        File directory;  
+        File directory;  // diretório que contém os arquivos no servidor
         ConnectionHandler(File directory) {
             this.directory = directory;
             setDaemon(true);
@@ -102,7 +89,7 @@ public class ThreadedFileServer {
             while (true) {
                 try {
                     Socket connection = connectionQueue.take();
-                    handleConnection(directory,connection);
+                    handleConnection(directory, connection);
                 }
                 catch (Exception e) {
                 }
@@ -112,22 +99,22 @@ public class ThreadedFileServer {
     
     
     private static void handleConnection(File directory, Socket connection) {
-        Scanner incoming;       // para ler dados do cliente
-        PrintWriter outgoing;   //para transmitir os dados do cliente
+        Scanner incoming;       // lendo do cliente
+        PrintWriter outgoing;   // envio para cliente
         String command = "Comando não lido";
         try {
             incoming = new Scanner( connection.getInputStream() );
             outgoing = new PrintWriter( connection.getOutputStream() );
             command = incoming.nextLine();
             if (command.equals("INDEX")) {
-                sendFileClient(directory, outgoing);
+                sendIndex(directory, outgoing);
             }
-            else if (command.startsWith("get")){
+            else if (command.startsWith("GET")){
                 String fileName = command.substring(3).trim();
                 sendFile(fileName, directory, outgoing);
             }
             else {
-                outgoing.println("Comando inválido");
+                outgoing.println("Comando não suportado");
                 outgoing.flush();
             }
             System.out.println("OK    " + connection.getInetAddress()
@@ -146,34 +133,29 @@ public class ThreadedFileServer {
         }
     }
 
-    /*
-     * Isso é chamado pelo método run() em resposta a um comando envio
-     * do cliente. Envie a lista de arquivos no diretório do servidor.
-     */
-    private static void sendFileClient(File directory, PrintWriter outgoing) throws Exception {
+  
+   	//enviar os dados do arquivo
+    private static void sendIndex(File directory, PrintWriter outgoing) throws Exception {
         String[] fileList = directory.list();
         for (int i = 0; i < fileList.length; i++)
             outgoing.println(fileList[i]);
         outgoing.flush();
         outgoing.close();
         if (outgoing.checkError())
-            throw new Exception("Erro enquanto enviada os dados.");
+            throw new Exception("Erro de transferência de dados");
     }
 
-    /*chamando pelo run() resposta  ao cliente
-     */
+    //enviar arquivo 
     private static void sendFile(String fileName, File directory, PrintWriter outgoing) throws Exception {
         File file = new File(directory,fileName);
         if ( (! file.exists()) || file.isDirectory() ) {
-            // erro se enviar um diretório que não existe
-            outgoing.println("Error");
+            outgoing.println("error");
         }
         else {
             outgoing.println("ok");
             BufferedReader fileIn = new BufferedReader( new FileReader(file) );
             while (true) {
-                // Read and send lines from the file until
-                // an end-of-file is encountered.
+               //lendo linhas
                 String line = fileIn.readLine();
                 if (line == null)
                     break;
@@ -183,7 +165,7 @@ public class ThreadedFileServer {
         outgoing.flush(); 
         outgoing.close();
         if (outgoing.checkError())
-            throw new Exception("Error durante transferência.");
+            throw new Exception("Erro de transferência de dados.");
     }
 
 
