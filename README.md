@@ -35,6 +35,4 @@ adicionar mais arquivos passíveis de transferência.
 * Caso deseje executar apenas uma thread de uma instância de um servidor que não atende vários cliente
 * Execute o FileServer e depois o cliente para ver a solução.
 
-A
-
 ## Dicas ou sugestões serão bem aceitas.
