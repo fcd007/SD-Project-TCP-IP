@@ -24,10 +24,17 @@ adicionar mais arquivos passíveis de transferência.
 * `javac FileCliente.java`
 * `javac ThreadedFileServer.java`
 * `javac FileServer.java`
+
+* Entre com o comando de execução do servidor e cliente abaixo:
 * Agora pode executar o servidor inicialmente - caso contrário não irá rodar o cliente;
-* `java ThreadedFileServer`
-* `java FileCliente`
+* `java ThreadedFileServer <diretório> ` 
+* `java FileCliente <servidor | ip | 127.0.0.1>`
+* `java FileClient  <servidor> <arquivo>`
+* `java FileClient  <servidor> <arquivo> <diretório-arquivo>"`
+
 * Caso deseje executar apenas uma thread de uma instância de um servidor que não atende vários cliente
 * Execute o FileServer e depois o cliente para ver a solução.
+
+A
 
 ## Dicas ou sugestões serão bem aceitas.
