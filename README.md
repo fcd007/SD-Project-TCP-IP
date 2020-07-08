@@ -22,7 +22,7 @@ adicionar mais arquivos passíveis de transferência.
 * Por via das dúvidas compile as classes do java uma de cada vez;
 * No terminal executa as etapas seguites:
 * `javac FileCliente.java`
-* `javac ThreadedFileServer.java
+* `javac ThreadedFileServer.java`
 * `javac FileServer.java`
 * Agora pode executar o servidor inicialmente - caso contrário não irá rodar o cliente;
 * `java ThreadedFileServer`
