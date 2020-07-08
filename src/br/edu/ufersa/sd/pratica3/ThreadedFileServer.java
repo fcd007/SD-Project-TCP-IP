@@ -22,7 +22,7 @@ public class ThreadedFileServer {
      * fila estão esperando por serviço e espero que não
      * gaste muito tempo na fila.
      */
-    private static final int CONNECTION_QUEUE_SIZE = 10;
+    private static final int CONNECTION_QUEUE_SIZE = 50;
     
     /*A fila usada para enviar conexões do
      * programa principal para os threads de manipulação de conexão.
@@ -31,10 +31,6 @@ public class ThreadedFileServer {
     private static ArrayBlockingQueue<Socket> connectionQueue;
     
     
-    /**
-     * Main program creates the thread pool, then opens a
-     * server socket to listen for connection requests.
-     */
     public static void main(String[] args) {
 
     	String directoryName;  // Directory name entered by the user.
